@@ -18,6 +18,9 @@ these mechanical changes, each written out below:
   block becomes `if constexpr` on the module's constant of that name;
 - details::circular_less_than, a `static` helper the tests reach into, is the
   module's adaptation, mcpplibs::mwrap::concurrentqueue::details::circular_less_than;
+- `#if !defined(TARGET_OS_IPHONE)` before main() also admits macOS, where
+  TargetConditionals.h (which tests/corealgos.h includes) defines it as 0:
+  upstream's file has no main() there;
 - minitest.h declares abi::__cxa_demangle, the one function it uses, instead
   of including <cxxabi.h>: with GCC 16, a unit that includes <cxxabi.h>
   cannot instantiate the module's thread-exit path (docs/usage.md).
@@ -82,6 +85,11 @@ def port_unittests(text: str) -> str:
     text = re.sub(r'\bMOODYCAMEL_NOEXCEPT\b', 'noexcept', text)
     text = re.sub(r'\bMOODYCAMEL_ALIGNAS\(', 'alignas(', text)
     text = re.sub(r'\bdetails::circular_less_than\b', 'mcpplibs::mwrap::concurrentqueue::details::circular_less_than', text)
+    # main() is upstream's except on iOS, which it tests with !defined(TARGET_OS_IPHONE);
+    # corealgos.h includes TargetConditionals.h on Apple, where macOS defines it as 0.
+    old = '#if !defined(TARGET_OS_IPHONE)'
+    assert text.count(old) == 1
+    text = text.replace(old, '#if !defined(TARGET_OS_IPHONE) || !TARGET_OS_IPHONE  // [mwrap] macOS defines it as 0')
     # The one #ifdef block on the configuration: if constexpr on the mapped constant.
     lines = text.split('\n')
     start = next(i for i, l in enumerate(lines) if l.strip() == '#ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED')
@@ -147,7 +155,8 @@ def main():
     output = run.stdout + run.stderr
     print(output, flush=True)
     registered = re.findall(r'^\s*REGISTER_TEST\((.+?)\);', src.joinpath('unittests.cpp').read_text(encoding='utf-8'), flags=re.M)
-    ran = re.findall(r'^moodycamel::ConcurrentQueueTests::(.+?)\.\.\. \n\s+passed$', output.replace('\r\n', '\n'), flags=re.M)
+    # The class name is typeid's, demangled where the ABI allows (MSVC's reads `class moodycamel::…`).
+    ran = re.findall(r'^(?:class |struct )?(?:moodycamel::)?ConcurrentQueueTests::(.+?)\.\.\. *\n\s*passed\s*$', output.replace('\r\n', '\n'), flags=re.M)
     missing = [name for name in registered if name.replace(' ', '') not in {r.replace(' ', '') for r in ran}]
     print(f'{len(ran)} of the {len(registered)} registered tests passed, {args.iterations} iteration(s) each; exit {run.returncode}')
     if missing:
