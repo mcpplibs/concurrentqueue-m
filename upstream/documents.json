@@ -1,0 +1,17 @@
+{
+  "upstream": "https://github.com/cameron314/concurrentqueue/archive/refs/tags/v1.0.5.tar.gz",
+  "upstream_sha256": "4d6368a27492d86011fde5ca0cf386dce7c49cd425aa3d9b063ca6ec373a6ef3",
+  "pruning": "Nothing of concurrentqueue is vendored: the headers (and, with the c-api feature, the C API sources) are compat.concurrentqueue 1.0.5's, from the same tarball. Its README and license are retained here. The conformance run builds the release's tests/unittests against the module, from the tarball downloaded at test time.",
+  "documents": [
+    {
+      "path": "upstream/concurrentqueue/README.md",
+      "source": "https://github.com/cameron314/concurrentqueue/blob/v1.0.5/README.md",
+      "sha256": "6dd0a6732be4ee5a9a6e2c7da5e4dc135f301e59c7d76bb4cf5d4a3ce269991f"
+    },
+    {
+      "path": "upstream/concurrentqueue/LICENSE.md",
+      "source": "https://github.com/cameron314/concurrentqueue/blob/v1.0.5/LICENSE.md",
+      "sha256": "22331571e5e3dbe4c79ad715e23127bdf3beabd75052c953ddabf191ef799e14"
+    }
+  ]
+}

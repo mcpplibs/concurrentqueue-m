@@ -1,0 +1,16 @@
+concurrentqueue-m: C++ module wrapper
+Copyright (c) 2026 mcpp-community contributors
+
+The wrapper contributions are licensed under the Apache License, Version 2.0.
+Upstream code, copied interfaces and dependencies retain their original
+licenses and copyright notices. moodycamel::ConcurrentQueue is distributed
+under the Simplified BSD license or, at your option, the Boost Software
+License 1.0; its lightweight semaphore embeds Jeff Preshing's semaphore under
+the zlib license:
+
+  Copyright (c) 2013-2016, Cameron Desrochers.
+  Copyright (c) 2015 Jeff Preshing.
+
+Its original README and license are retained in upstream/concurrentqueue/.
+The headers themselves are provided by compat.concurrentqueue from the same
+release. Provenance and checksums are recorded in upstream/documents.json.

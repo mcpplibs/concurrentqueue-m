@@ -1,0 +1,51 @@
+# Module wrapper; upstream API preserved. Policy: mcpp-index/docs/mwrap.md.
+[package]
+namespace   = "mcpplibs.mwrap"
+name        = "concurrentqueue"
+version     = "1.0.5"
+description = "moodycamel::ConcurrentQueue 1.0.5 C++ modules for mcpp (import mcpplibs.mwrap.concurrentqueue;): the lock-free MPMC queue, its blocking variant and semaphore over compat.concurrentqueue, the C API behind the c-api feature"
+license     = "Apache-2.0"
+authors     = ["mcpp-community"]
+repo        = "https://github.com/mcpplibs/concurrentqueue-m"
+platforms   = ["linux", "macos", "windows"]
+
+[targets.concurrentqueue]
+kind = "lib"
+
+[build]
+sources      = ["src/*.cppm", "src/*.cpp"]
+# <mwrap/concurrentqueue/config.hpp> (the configuration the module is built
+# with) and <mwrap/concurrentqueue/macros.hpp> (the headers with their macros).
+include_dirs = ["include"]
+
+[features]
+default = []
+# Upstream's C API (moodycamel_cq_*, moodycamel_bcq_*): its two sources in
+# compat.concurrentqueue, and the module that exports it.
+c-api = { sources = ["src/c_api/*.cppm"], forward = ["compat.concurrentqueue/c-api"] }
+
+[dependencies]
+compat.concurrentqueue = "1.0.5"
+
+[test]
+# tests/c_api is its own project (it needs the c-api feature).
+discover = ["tests/*.cpp"]
+
+[package.metadata.mwrap]
+upstream-version = "1.0.5"
+
+[[runtime.deploy]]
+from = "LICENSE"
+to   = "licenses/concurrentqueue"
+
+[[runtime.deploy]]
+from = "NOTICE"
+to   = "licenses/concurrentqueue"
+
+[[runtime.deploy]]
+from = "upstream/concurrentqueue/README.md"
+to   = "licenses/concurrentqueue/upstream/concurrentqueue"
+
+[[runtime.deploy]]
+from = "upstream/concurrentqueue/LICENSE.md"
+to   = "licenses/concurrentqueue/upstream/concurrentqueue"
