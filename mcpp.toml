@@ -23,6 +23,11 @@ default = []
 # Upstream's C API (moodycamel_cq_*, moodycamel_bcq_*): its two sources in
 # compat.concurrentqueue, and the module that exports it.
 c-api = { sources = ["src/c_api/*.cppm"], forward = ["compat.concurrentqueue/c-api"] }
+# Upstream's MOODYCAMEL_NO_THREAD_LOCAL: thread ids from std::this_thread and
+# no thread_local, so implicit producers are not recycled at thread exit (as
+# upstream always builds on ARM and with Clang in GNU mode). With GCC it lets a
+# translation unit that includes <cxxabi.h> (gtest does) use the queue.
+no-thread-local = { defines = ["MOODYCAMEL_NO_THREAD_LOCAL"] }
 
 [dependencies]
 compat.concurrentqueue = "1.0.5"

@@ -1,0 +1,4 @@
+[template]
+description  = "A producer-consumer pipeline with import mcpplibs.mwrap.concurrentqueue: producer threads, a blocking queue, consumers that wait with a timeout"
+default      = true
+post_message = "Run `mcpp run`, or `mcpp run -- <producers> <consumers> <items>`."
