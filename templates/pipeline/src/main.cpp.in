@@ -1,0 +1,62 @@
+// {{project.name}} — a producer-consumer pipeline over
+// import mcpplibs.mwrap.concurrentqueue: producer threads enqueue numbers in
+// bulk through their tokens, consumer threads wait on a blocking queue (with a
+// timeout, so they notice the end) and count the primes they are handed.
+// Arguments: producers, consumers, numbers (4, 4, 200000).
+import std;
+import mcpplibs.mwrap.concurrentqueue;
+
+namespace {
+
+bool is_prime(std::uint64_t n) {
+    if (n < 2) return false;
+    for (std::uint64_t d = 2; d * d <= n; ++d)
+        if (n % d == 0) return false;
+    return true;
+}
+
+unsigned arg(int argc, char** argv, int i, unsigned fallback) {
+    unsigned value = fallback;
+    if (argc > i) std::from_chars(argv[i], argv[i] + std::strlen(argv[i]), value);
+    return value == 0 ? fallback : value;
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+    const unsigned producers = arg(argc, argv, 1, 4), consumers = arg(argc, argv, 2, 4), items = arg(argc, argv, 3, 200000);
+    moodycamel::BlockingConcurrentQueue<std::uint64_t> queue;
+    std::atomic<std::uint64_t> consumed{0}, primes{0};
+    const auto start = std::chrono::steady_clock::now();
+    {
+        std::vector<std::jthread> threads;
+        for (unsigned p = 0; p < producers; ++p)
+            threads.emplace_back([&, p] {
+                moodycamel::ProducerToken token(queue);
+                std::array<std::uint64_t, 256> batch;
+                for (unsigned i = p; i < items;) {
+                    std::size_t n = 0;
+                    for (; n < batch.size() && i < items; ++n, i += producers) batch[n] = i;
+                    queue.enqueue_bulk(token, batch.begin(), n);
+                }
+            });
+        for (unsigned c = 0; c < consumers; ++c)
+            threads.emplace_back([&] {
+                moodycamel::ConsumerToken token(queue);
+                std::array<std::uint64_t, 256> batch;
+                // Until every number is counted: the timeout lets a consumer
+                // with nothing left to take see that the others finished.
+                while (consumed.load() < items) {
+                    const std::size_t n = queue.wait_dequeue_bulk_timed(token, batch.begin(), batch.size(), std::chrono::milliseconds(5));
+                    std::uint64_t found = 0;
+                    for (std::size_t k = 0; k < n; ++k) found += is_prime(batch[k]);
+                    primes.fetch_add(found);
+                    consumed.fetch_add(n);
+                }
+            });
+    }
+    const std::chrono::duration<double> took = std::chrono::steady_clock::now() - start;
+    std::println("{} producers -> {} consumers: {} of {} numbers, {} primes, {:.0f} items/s", producers, consumers,
+                 consumed.load(), items, primes.load(), consumed.load() / took.count());
+    return consumed.load() == items ? 0 : 1;
+}
