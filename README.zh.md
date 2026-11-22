@@ -26,7 +26,7 @@
 ## 快速开始
 
 ```sh
-mcpp new pipeline --template mcpplibs.mwrap.concurrentqueue@1.0.5
+mcpp new pipeline --template mcpplibs.mwrap.concurrentqueue@1.0.5.1
 cd pipeline
 mcpp run
 ```
@@ -36,7 +36,7 @@ mcpp run
 
 ```toml
 [dependencies]
-"mcpplibs.mwrap.concurrentqueue" = "1.0.5"
+mcpplibs.mwrap.concurrentqueue = "1.0.5.1"
 ```
 
 ```cpp

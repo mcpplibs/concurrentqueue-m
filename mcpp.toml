@@ -2,7 +2,7 @@
 [package]
 namespace   = "mcpplibs.mwrap"
 name        = "concurrentqueue"
-version     = "1.0.5"
+version     = "1.0.5.1"
 description = "moodycamel::ConcurrentQueue 1.0.5 C++ modules for mcpp (import mcpplibs.mwrap.concurrentqueue;): the lock-free MPMC queue, its blocking variant and semaphore over compat.concurrentqueue, the C API behind the c-api feature"
 license     = "Apache-2.0"
 authors     = ["mcpp-community"]
