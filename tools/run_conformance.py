@@ -64,7 +64,7 @@ main = "tests/unittests/unittests.cpp"
 sources = ["tests/common/*.cpp", "tests/unittests/mallocmacro.cpp"]
 
 [dependencies]
-"mcpplibs.mwrap.concurrentqueue" = {{ path = {root}, features = ["c-api"] }}
+mcpplibs.mwrap.concurrentqueue = {{ path = {root}, features = ["c-api"] }}
 '''
 
 

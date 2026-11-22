@@ -6,7 +6,7 @@ version     = "0.1.0"
 description = "mcpplibs.mwrap.concurrentqueue with the c-api and no-thread-local features"
 
 [dependencies]
-"mcpplibs.mwrap.concurrentqueue" = { path = "../..", features = ["c-api", "no-thread-local"] }
+mcpplibs.mwrap.concurrentqueue = { path = "../..", features = ["c-api", "no-thread-local"] }
 
 [dev-dependencies]
 compat.gtest = "1.15.2"
